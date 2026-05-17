@@ -1,0 +1,23 @@
+species:
+  name: WULI
+dataset:
+  root: datasets/wuli/
+training:
+  det_epochs: 500
+  kp_epochs: 1000
+keypoints:
+- P1
+- P2
+- P3
+- P4
+- P5
+- P6
+- P7
+skeleton:
+  - [P1, P2]
+  - [P2, P3]
+  - [P3, P4]
+  - [P4, P5]
+  - [P5, P6]
+  - [P6, P7]
+  - [P7, P1]

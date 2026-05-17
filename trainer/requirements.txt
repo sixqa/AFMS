@@ -1,0 +1,22 @@
+# AFMS Trainer Dependencies
+# Tested on Python 3.10, CUDA 11.8
+
+# Core
+torch>=2.0.0
+torchvision>=0.15.0
+
+# OpenMMLab
+mmengine>=0.9.0
+mmcv>=2.0.0
+mmdet>=3.0.0
+mmpose>=1.0.0
+
+# ONNX export
+mmdeploy
+onnx>=1.14.0
+onnxruntime>=1.16.0
+
+# Utilities
+pyyaml
+numpy
+matplotlib

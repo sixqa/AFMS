@@ -1,0 +1,67 @@
+{
+  "carp_det": {
+    "bbox_mAP": 0.815,
+    "bbox_mAP_50": 0.995,
+    "bbox_mAP_75": 0.965,
+    "final_loss": null
+  },
+  "crab_det": {
+    "bbox_mAP": 0.658,
+    "bbox_mAP_50": 0.996,
+    "bbox_mAP_75": 0.837,
+    "final_loss": null
+  },
+  "crayfish_det": {
+    "bbox_mAP": 0.596,
+    "bbox_mAP_50": 0.938,
+    "bbox_mAP_75": 0.732,
+    "final_loss": null
+  },
+  "ms_det": {
+    "bbox_mAP": 0.482,
+    "bbox_mAP_50": 0.899,
+    "bbox_mAP_75": 0.386,
+    "final_loss": null
+  },
+  "wuli_det": {
+    "bbox_mAP": 0.596,
+    "bbox_mAP_50": 0.988,
+    "bbox_mAP_75": 0.712,
+    "final_loss": null
+  },
+  "carp_kp": {
+    "PCK": 0.9277564224477791,
+    "AUC": 0.27202165072805623,
+    "NME": 0.13449525187377495,
+    "EPE": null,
+    "final_loss": null
+  },
+  "crab_kp": {
+    "PCK": 0.8436705430619149,
+    "AUC": 0.10036989795779916,
+    "NME": 0.188284401001969,
+    "EPE": null,
+    "final_loss": null
+  },
+  "crayfish_kp": {
+    "PCK": 0.009523809523809523,
+    "AUC": 0.0,
+    "NME": 0.8820330931408571,
+    "EPE": null,
+    "final_loss": null
+  },
+  "ms_kp": {
+    "PCK": 0.8420640950601443,
+    "AUC": 0.28794984354246866,
+    "NME": 0.16166917225369193,
+    "EPE": null,
+    "final_loss": null
+  },
+  "wuli_kp": {
+    "PCK": 0.92056803287364,
+    "AUC": 0.44107282061336484,
+    "NME": 0.04233561720803519,
+    "EPE": null,
+    "final_loss": null
+  }
+}

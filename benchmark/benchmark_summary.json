@@ -1,0 +1,10 @@
+{
+  "total_samples": 1591,
+  "successful": 1572,
+  "failed": 19,
+  "success_rate": 98.80578252671276,
+  "test_duration_minutes": 118.0,
+  "pause_count": 16,
+  "avg_process_duration_s": 4.453376729533357,
+  "species": "Channa argus (Northern Snakehead)"
+}

@@ -1,0 +1,17 @@
+species:
+  name: LABEL
+dataset:
+  root: datasets/label/
+training:
+  det_epochs: 500
+  kp_epochs: 1000
+keypoints:
+- P1_L
+- P2_L
+- P3_L
+- P4_L
+skeleton:
+  - [P1_L, P2_L]
+  - [P2_L, P3_L]
+  - [P3_L, P4_L]
+  - [P4_L, P1_L]

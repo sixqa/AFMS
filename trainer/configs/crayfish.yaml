@@ -1,0 +1,14 @@
+species:
+  name: CRAYFISH
+dataset:
+  root: datasets/crayfish/
+training:
+  det_epochs: 500
+  kp_epochs: 1000
+keypoints:
+- tou1
+- zhonbu
+- wei1
+skeleton:
+  - [tou1, zhonbu]
+  - [zhonbu, wei1]

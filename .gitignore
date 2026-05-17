@@ -1,0 +1,52 @@
+# ============================================================================
+# AFMS — Trainer + Benchmark (open source)
+# Software / Paper / Docs are NOT included
+# ============================================================================
+
+# ── Training data & models (host separately) ──
+trainer/datasets/
+trainer/models/
+trainer/runs/
+trainer/old_assets/
+*.pth
+*.onnx
+*.pkl
+*.pt
+
+# ── Software (proprietary) ──
+software/
+
+# ── Paper & docs (not submitted) ──
+paper/
+docs/
+
+# ── Design source files ──
+*.ai
+*.psd
+*.tiff
+
+# ── Development ──
+trainer/dev/
+trainer/__pycache__/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.mypy_cache/
+
+# ── IDE / Editor ──
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ── Claude / AI tools ──
+.claude/
+
+# ── Temporary ──
+*.tmp
+*.bak
+*.orig

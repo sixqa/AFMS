@@ -1,0 +1,98 @@
+[
+  {
+    "sample_seq": 14,
+    "gap_seconds": 450.0,
+    "timestamp": "20260116100932204",
+    "note": "Stress test paused"
+  },
+  {
+    "sample_seq": 68,
+    "gap_seconds": 56.0,
+    "timestamp": "20260116101438887",
+    "note": "Stress test paused"
+  },
+  {
+    "sample_seq": 130,
+    "gap_seconds": 78.0,
+    "timestamp": "20260116102023797",
+    "note": "Stress test paused"
+  },
+  {
+    "sample_seq": 134,
+    "gap_seconds": 38.0,
+    "timestamp": "20260116102124979",
+    "note": "Stress test paused"
+  },
+  {
+    "sample_seq": 160,
+    "gap_seconds": 41.0,
+    "timestamp": "20260116102357238",
+    "note": "Stress test paused"
+  },
+  {
+    "sample_seq": 242,
+    "gap_seconds": 93.0,
+    "timestamp": "20260116103108011",
+    "note": "Stress test paused"
+  },
+  {
+    "sample_seq": 279,
+    "gap_seconds": 79.0,
+    "timestamp": "20260116103427147",
+    "note": "Stress test paused"
+  },
+  {
+    "sample_seq": 335,
+    "gap_seconds": 49.0,
+    "timestamp": "20260116103842094",
+    "note": "Stress test paused"
+  },
+  {
+    "sample_seq": 336,
+    "gap_seconds": 53.0,
+    "timestamp": "20260116103935995",
+    "note": "Stress test paused"
+  },
+  {
+    "sample_seq": 942,
+    "gap_seconds": 475.0,
+    "timestamp": "20260116111913942",
+    "note": "Stress test paused"
+  },
+  {
+    "sample_seq": 1006,
+    "gap_seconds": 93.0,
+    "timestamp": "20260116112403330",
+    "note": "Stress test paused"
+  },
+  {
+    "sample_seq": 1027,
+    "gap_seconds": 52.0,
+    "timestamp": "20260116112600253",
+    "note": "Stress test paused"
+  },
+  {
+    "sample_seq": 1365,
+    "gap_seconds": 92.0,
+    "timestamp": "20260116114548187",
+    "note": "Stress test paused"
+  },
+  {
+    "sample_seq": 1397,
+    "gap_seconds": 44.0,
+    "timestamp": "20260116114748445",
+    "note": "Stress test paused"
+  },
+  {
+    "sample_seq": 1487,
+    "gap_seconds": 64.0,
+    "timestamp": "20260116115316838",
+    "note": "Stress test paused"
+  },
+  {
+    "sample_seq": 1530,
+    "gap_seconds": 32.0,
+    "timestamp": "20260116115542381",
+    "note": "Stress test paused"
+  }
+]
