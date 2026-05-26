@@ -16,6 +16,9 @@ trainer/old_assets/
 # ── Software (proprietary) ──
 software/
 
+# ── Paper (not part of public repository) ──
+paper/
+
 # ── Docs ──
 docs/
 
