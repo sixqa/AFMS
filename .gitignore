@@ -16,9 +16,20 @@ trainer/old_assets/
 # ── Software (proprietary) ──
 software/
 
-# ── Paper & docs (not submitted) ──
-paper/
+# ── Docs ──
 docs/
+
+# ── Paper LaTeX build artifacts ──
+paper/*.aux
+paper/*.log
+paper/*.out
+paper/*.pdf
+paper/*.spl
+paper/*.bbl
+paper/*.blg
+paper/*.synctex.gz
+paper/texput.log
+paper/*-zh.*
 
 # ── Design source files ──
 *.ai

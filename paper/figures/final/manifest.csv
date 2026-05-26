@@ -1,0 +1,9 @@
+file,source,purpose,status
+trainer_metrics.csv,trainer/configs/*.yaml; trainer/datasets/*/*_coco.json; trainer/evals/batch_results_*.json,Tabular source data for protocol-defined validation report,generated
+fig_system_architecture.jpg,paper\figure\模式图.jpg,Hand-drawn AFMS hardware-software-model overview,copied
+fig_model_trainer_workflow.jpg,paper\figure\模型.jpg,Hand-drawn trainer and inference workflow,copied
+fig_structured_light.jpg,paper\figure\3d结构光+标签可选模块.jpg,3D structured-light hardware concept with optional tag module,copied
+fig_structured_light_experiment.jpg,paper\figure\3d结构光实验.jpg,3D structured-light experiment photograph,copied
+fig_stress_batch_combined.pdf,benchmark\figures\fig_stress_batch_combined.pdf,Combined operational batch-processing timeline and throughput,copied
+fig_stress_batch_combined.svg,benchmark\figures\fig_stress_batch_combined.svg,Combined operational batch-processing timeline and throughput,copied
+fig_stress_batch_combined.tiff,benchmark\figures\fig_stress_batch_combined.tiff,Combined operational batch-processing timeline and throughput,copied

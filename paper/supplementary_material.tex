@@ -1,0 +1,279 @@
+\documentclass[9pt]{osa-supplemental-document}
+\setboolean{shortarticle}{false}
+
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{multirow}
+\usepackage{microtype}
+\usepackage{siunitx}
+\usepackage{hyperref}
+
+\title{AFMS: a minimal-protocol-driven framework for multi-species aquaculture animal phenotyping: supplemental document}
+\author{}
+
+\setboolean{displaycopyright}{false}
+
+% Predefine theabstract to avoid undefined control sequence in maketitle
+\makeatletter
+\gdef\theabstract{}
+\makeatother
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This supplemental document provides reproducibility details and extended evidence for the AFMS phenotyping framework.
+Section~S1 gives representative protocol examples in their native YAML format, for a complex fish topology (common carp) and a sparse semantic topology (red swamp crayfish). Section~S2 lists the six protocol validation rules enforced at load time. Section~S3 reports complete per-species perception-module validation metrics including mAP@0.75, AUC, and convergence epochs. Section~S4 provides operational batch-processing statistics from a 1591-sample run.
+\end{abstract}
+
+% ============================================================================
+\section{Protocol specification and reproducibility details}
+\label{sec:protocol_spec}
+% ============================================================================
+
+The AFMS protocol is a YAML record that encodes species-specific measurement definitions: landmark set, skeleton topology, phenotype traits (lines, angles, ratios), scoring rules, quality-control thresholds, and model-asset paths. The protocol does not specify model architectures, loss functions, or training schedules; those are handled by fixed-generation templates. This section provides two representative examples in their native YAML format.
+
+\subsection{Example 1: Common carp (\textit{Cyprinus carpio}) --- full-body fish topology}
+
+The carp protocol defines 13 landmarks (P1--P12 plus PH for head-related measurements), 19 line traits, 2 angle traits, and a scoring system that weights body length over cross-body width. A single ratio L5/L19 captures body depth relative to body length.
+
+\begin{small}
+\begin{verbatim}
+species: CARP
+version: 1
+model:
+  detection: carp/rtmdet2onnx/end2end.onnx
+  keypoint: carp/rtmpose2onnx/end2end.onnx
+  det_input_size: [640, 640]
+  kp_input_size: [512, 512]
+keypoints:
+  - P1  - P2  - P3  - P4  - P5  - P6
+  - P7  - P8  - P9  - P10 - P11 - P12
+  - PH
+skeleton:
+  - [P1, P2]   - [P2, P3]   - [P3, P4]
+  - [P4, P5]   - [P5, P6]   - [P6, P7]
+  - [P7, P8]   - [P8, P9]   - [P9, P10]
+  - [P10, P11] - [P11, P12] - [P12, P1]
+  - [P2, P12]  - [P3, P11]  - [P3, P10]  - [P5, P7]
+phenotype:
+  lines:
+    L1: [P1, P2]    L2: [P2, P3]    L3: [P3, P4]
+    L4: [P4, P5]    L5: [P5, P6]    L6: [P6, P7]
+    L7: [P7, P8]    L8: [P8, P9]    L9: [P9, P10]
+    L10: [P10, P11] L11: [P11, P12] L12: [P12, P1]
+    L13: [P2, P12]  L14: [P3, P11]  L15: [P3, P10]
+    L16: [P5, P7]   L17: [P2, PH]   L18: [PH, P3]
+    L19: [P1, P6]
+  angles:
+    A1: [P3, PH, P2]
+    A2: [P2, P3, PH]
+scoring:
+  lines:
+    L19: 80
+    L13: 20
+  angles:
+    A1: 50
+    A2: 50
+  ratio:
+    R1: "L5/L19|100"
+  weight:
+    lines: 50
+    angles: 30
+    ratio: 20
+display:
+  name: Common Carp
+  name_en: Common Carp
+\end{verbatim}
+\end{small}
+
+\subsection{Example 2: Red swamp crayfish (\textit{Procambarus clarkii}) --- sparse semantic topology}
+
+The crayfish protocol demonstrates that AFMS supports arbitrary semantic landmark names. The three landmarks use Chinese anatomical terms (\texttt{tou1} head, \texttt{zhonbu} mid-body, \texttt{wei1} tail), defining 2 line traits and 1 angle trait with a single ratio L1/L2.
+
+\begin{small}
+\begin{verbatim}
+species: CRAYFISH
+version: 1
+model:
+  detection: crayfish/rtmdet2onnx/end2end.onnx
+  keypoint: crayfish/rtmpose2onnx/end2end.onnx
+  det_input_size: [640, 640]
+  kp_input_size: [512, 512]
+keypoints:
+  - tou1
+  - zhonbu
+  - wei1
+skeleton:
+  - [tou1, zhonbu]
+  - [zhonbu, wei1]
+phenotype:
+  lines:
+    L1: [tou1, zhonbu]
+    L2: [zhonbu, wei1]
+  angles:
+    A1: [tou1, zhonbu, wei1]
+scoring:
+  lines:
+    L1: 40
+    L2: 60
+  angles:
+    A1: 100
+  ratio:
+    R1: "L1/L2|100"
+  weight:
+    lines: 50
+    angles: 30
+    ratio: 20
+display:
+  name: Crayfish
+  name_en: Crayfish
+\end{verbatim}
+\end{small}
+
+Full machine-readable protocols for all five tested species (common carp, Chinese mitten crab, red swamp crayfish, largemouth bass, northern snakehead) are available in the project repository. Each protocol follows the same YAML schema shown above, with species-specific landmark sets, skeleton topologies, phenotype traits, and scoring rules.
+
+% ============================================================================
+\section{Protocol validation rules}
+\label{sec:validation}
+% ============================================================================
+
+AFMS validates each protocol at load time through six semantic checks. All checks must pass before any inference begins; errors are reported together in a single \texttt{ProtocolError} to allow batch fixing:
+
+\begin{enumerate}
+  \item \textbf{Keypoint integrity}: the keypoint list is non-empty and contains no duplicate entries.
+  \item \textbf{Model file existence}: the detector and keypoint model files specified in the \texttt{model} section exist on disk.
+  \item \textbf{Phenotype reference consistency}: every landmark name referenced in \texttt{phenotype.lines} and \texttt{phenotype.angles} is defined in the \texttt{keypoints} list.
+  \item \textbf{Scoring reference consistency}: every trait name referenced in \texttt{scoring.lines}, \texttt{scoring.angles}, and \texttt{scoring.ratio} exists in the corresponding \texttt{phenotype} section.
+  \item \textbf{Skeleton reference consistency}: every landmark in \texttt{skeleton} connections is defined in \texttt{keypoints}.
+  \item \textbf{Required fields}: \texttt{species}, \texttt{keypoints}, \texttt{model.detection}, and \texttt{model.keypoint} are present.
+\end{enumerate}
+
+% ============================================================================
+\section{Complete validation metrics}
+\label{sec:validation_results}
+% ============================================================================
+
+Table~\ref{tab:all_results} reports the complete per-species validation metrics for the perception modules used by AFMS. These metrics are not intended as cross-species model rankings; they confirm that the protocol-generated detection and keypoint-estimation modules are adequate for downstream phenotyping. In addition to the metrics shown in the main text, mAP@0.75 and AUC are included here to provide a fuller assessment of bounding-box localization precision and keypoint-estimation stability, respectively. The ``Conv.'' column reports (best detection epoch / best keypoint epoch).
+
+\begin{table}[htbp]
+\centering
+\caption{Complete per-species perception-module validation metrics. ``Conv.'' shows (best detection epoch / best keypoint epoch).}
+\label{tab:all_results}
+\small
+\begin{tabular}{lc ccccc cc}
+\toprule
+\textbf{Species} & \textbf{Kpts}
+  & \textbf{mAP} & \textbf{mAP@0.5} & \textbf{mAP@0.75}
+  & \textbf{PCK} & \textbf{AUC} & \textbf{NME} & \textbf{Conv.} \\
+\midrule
+Carp      & 13 & 0.871 & 0.988 & 0.966 & 0.928 & 0.272 & 0.134 & 2 / 2   \\
+Crab      & 12 & 0.762 & 0.981 & 0.919 & 0.974 & 0.283 & 0.097 & 2 / 4   \\
+Crayfish  &  3 & 0.682 & 0.955 & 0.879 & 0.687 & 0.043 & 0.095 & 48 / 53 \\
+Bass      & 12 & 0.687 & 0.970 & 0.860 & 0.932 & 0.374 & 0.106 & 1 / 3   \\
+Snakehead &  7 & 0.787 & 1.000 & 0.906 & 0.967 & 0.689 & 0.028 & 1 / 2   \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Four of five species achieve PCK $>$ 0.92 and mAP@0.5 $>$ 0.95 without per-species parameter tuning, indicating that the protocol-driven training template generalizes across diverse morphologies. The crayfish results (PCK 0.687, AUC 0.043) reflect the combined challenges of a sparse 3-landmark topology and a small training set (140 images). Snakehead achieves the highest AUC (0.689) and the lowest NME (0.028), likely due to its larger training set (532 images) and well-defined elongated body axis.
+
+% ============================================================================
+\section{Operational batch-processing details}
+\label{sec:batch_details}
+% ============================================================================
+
+An operational batch-processing test evaluated whether AFMS could sustain continuous phenotyping under real production conditions. Breeding practitioners processed 1591 largemouth bass samples over 118 minutes without software intervention. This section reports detailed statistics from that test.
+
+\subsection{Processing speed and throughput}
+
+Table~\ref{tab:processing_speed} summarizes the per-sample processing time for the 1572 successfully processed samples. The median (2.92\,s) represents typical per-sample duration; the higher mean (4.41\,s) reflects idle periods during operator pauses.
+
+\begin{table}[htbp]
+\centering
+\caption{Per-sample processing speed statistics (1572 successful samples).}
+\label{tab:processing_speed}
+\small
+\begin{tabular}{lr}
+\toprule
+\textbf{Metric} & \textbf{Value} \\
+\midrule
+Mean processing time & 4.41\,s \\
+Median processing time & 2.92\,s \\
+Standard deviation & 17.44\,s \\
+Minimum & 1.14\,s \\
+Maximum & 475.5\,s \\
+Mean throughput & 0.23 samples/s \\
+Theoretical hourly throughput & 816 samples/h \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Success rate and failure analysis}
+
+The overall success rate of 98.8\% is composed of two quality-control stages (Table~\ref{tab:success_rate}). Image quality checks pass 99.1\% of samples; weight measurement validity checks pass 99.6\%. Of the 19 overall failures, 14 were attributable to image quality issues (blur, occlusion, or corrupted data) and 4 to invalid weight measurements; 3 samples failed both checks.
+
+\begin{table}[htbp]
+\centering
+\caption{Success rate breakdown across quality-control stages.}
+\label{tab:success_rate}
+\small
+\begin{tabular}{lrr}
+\toprule
+\textbf{Stage} & \textbf{Passed / Total} & \textbf{Rate} \\
+\midrule
+Image quality check    & 1577 / 1591 & 99.1\% \\
+Weight measurement     & 1585 / 1591 & 99.6\% \\
+Overall success        & 1572 / 1591 & 98.8\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Weight measurement distribution}
+
+Table~\ref{tab:weight_stats} shows the weight distribution for successfully measured samples. The distribution is consistent with expected production-size variation (coefficient of variation 33.6\%). Thirteen samples (0.8\%) are statistical outliers beyond $\pm$3 standard deviations.
+
+\begin{table}[htbp]
+\centering
+\caption{Weight measurement statistics for 1572 successful samples.}
+\label{tab:weight_stats}
+\small
+\begin{tabular}{lr}
+\toprule
+\textbf{Metric} & \textbf{Value} \\
+\midrule
+Mean weight   & 108.0\,g \\
+Median weight & 104\,g \\
+Std.\ deviation & 36.3\,g \\
+Minimum       & 18.7\,g \\
+Maximum       & 323\,g \\
+Outliers ($>$3 SD) & 13 (0.8\%) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Operator pause events}
+
+During the 118-minute run, the operator paused the system 16 times for sample repositioning and equipment adjustment (Table~\ref{tab:pause_summary}). Two extended pauses (450\,s and 475\,s) account for most of the total pause duration. Of the 19 processing failures, 6 occurred within $\pm$5 samples of a pause event, suggesting that post-pause recovery periods carry a slightly elevated failure risk, potentially related to camera re-initialization or sample repositioning after pauses.
+
+\begin{table}[htbp]
+\centering
+\caption{Summary of operator pause events during the batch-processing run.}
+\label{tab:pause_summary}
+\small
+\begin{tabular}{lr}
+\toprule
+\textbf{Metric} & \textbf{Value} \\
+\midrule
+Number of pauses & 16 \\
+Median pause duration & 60\,s \\
+Mean pause duration & 103\,s \\
+Maximum pause duration & 475\,s \\
+Failures within $\pm$5 samples of a pause & 6 out of 19 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\end{document}
