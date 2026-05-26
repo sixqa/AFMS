@@ -1,36 +1,39 @@
-# AFMS — 训练器 (Trainer)
+# AFMS — Protocol-Driven Multi-Species Aquaculture Phenotyping Framework (Trainer)
 
-协议驱动的多物种水产表型测量框架 — 训练模块。
+> 中文版说明请见 [README.zh.md](./README.zh.md)  
+> For Chinese documentation, see [README.zh.md](./README.zh.md).
 
-## 目录结构
+This repository contains the model training and evaluation module (Trainer) for AFMS, a protocol-driven phenotyping framework that enables multi-species aquaculture animal measurement without core runtime code modification. Species-specific measurement knowledge is encoded in compact YAML protocol files (~20 lines), from which training configurations, inference pipelines, and phenotype calculations are automatically generated.
+
+## Repository Structure
 
 ```
 trainer/
-├── configs/                   # 物种协议 + 生成的训练配置
-│   ├── carp.yaml              # 鲤鱼协议
-│   ├── crab.yaml              # 螃蟹协议
-│   ├── crayfish.yaml          # 小龙虾协议
-│   ├── ms.yaml                # 大口黑鲈协议
-│   ├── wuli.yaml              # 乌鳢协议
-│   ├── label.yaml             # 标签协议
-│   ├── det/                   # 自动生成的检测配置
-│   └── kp/                    # 自动生成的关键点配置
+├── configs/                   # Species protocols + auto-generated training configs
+│   ├── carp.yaml              # Common carp protocol
+│   ├── crab.yaml              # Chinese mitten crab protocol
+│   ├── crayfish.yaml          # Red swamp crayfish protocol
+│   ├── ms.yaml                # Largemouth bass protocol
+│   ├── wuli.yaml              # Northern snakehead protocol
+│   ├── label.yaml             # Label inspection protocol
+│   ├── det/                   # Auto-generated detection configs
+│   └── kp/                    # Auto-generated keypoint configs
 ├── hooks/
-│   └── hooks.py               # 自定义训练钩子 (EarlyStopping 等)
+│   └── hooks.py               # Custom training hooks (EarlyStopping, etc.)
 ├── tools/
-│   ├── generate.py            # YAML → 训练配置 自动生成
-│   ├── train_det.py           # 检测模型训练入口
-│   ├── train_kp.py            # 关键点模型训练入口
-│   ├── export_onnx.py         # ONNX 导出
-│   ├── evaluate_det.py        # 检测评估
-│   ├── evaluate_kp.py         # 关键点评估
-│   ├── batch_evaluate.py      # 批量评估
-│   └── validate_datasets.py   # 数据集校验
-├── evals/                     # 评估结果 (JSON + 图)
-└── requirements.txt           # 依赖
+│   ├── generate.py            # YAML protocol → training config generator
+│   ├── train_det.py           # Detection model training entry
+│   ├── train_kp.py            # Keypoint model training entry
+│   ├── export_onnx.py         # ONNX export
+│   ├── evaluate_det.py        # Detection evaluation
+│   ├── evaluate_kp.py         # Keypoint evaluation
+│   ├── batch_evaluate.py      # Batch evaluation
+│   └── validate_datasets.py   # Dataset validation
+├── evals/                     # Evaluation results (JSON + figures)
+└── requirements.txt           # Dependencies
 ```
 
-## 环境
+## Environment Setup
 
 ```bash
 conda create -n mmpose python=3.10
@@ -44,9 +47,9 @@ mim install "mmpose>=1.0.0"
 pip install mmdeploy pyyaml
 ```
 
-## 新增物种流程
+## Adding a New Species
 
-### 1. 写 YAML 协议 (~20 行)
+### 1. Write a YAML Protocol (~20 lines)
 
 ```yaml
 species:
@@ -65,52 +68,54 @@ training:
   kp_epochs: 1000
 ```
 
-### 2. 生成训练配置
+### 2. Generate Training Configurations
 
 ```bash
 cd trainer
 python tools/generate.py configs/myfish.yaml
 ```
 
-→ 自动生成 `configs/det/myfish.py` + `configs/kp/myfish.py`
+→ Auto-generates `configs/det/myfish.py` + `configs/kp/myfish.py`
 
-### 3. 训练
+### 3. Train Models
 
 ```bash
 python tools/train_det.py --species myfish
 python tools/train_kp.py --species myfish
 ```
 
-### 4. 导出 ONNX
+### 4. Export to ONNX
 
 ```bash
 python tools/export_onnx.py --species myfish
 ```
 
-## 数据集格式
+## Dataset Format
 
-COCO 格式，目录结构：
+COCO annotation format, with the following directory structure:
 
 ```
 trainer/datasets/<species>/
-├── train/              # 训练图片
-├── val/                # 验证图片
-├── train_coco.json     # 训练标注 (COCO)
-└── val_coco.json       # 验证标注 (COCO)
+├── train/              # Training images
+├── val/                # Validation images
+├── train_coco.json     # Training annotations (COCO)
+└── val_coco.json       # Validation annotations (COCO)
 ```
 
-## 已有物种
+## Supported Species
 
-| 物种 | 学名 | 关键点 | 协议文件 |
-|------|------|--------|---------|
-| 鲤鱼 | *Cyprinus carpio* | 13 | `configs/carp.yaml` |
-| 中华绒螯蟹 | *Eriocheir sinensis* | 12 | `configs/crab.yaml` |
-| 克氏原螯虾 | *Procambarus clarkii* | 3 | `configs/crayfish.yaml` |
-| 大口黑鲈 | *Micropterus salmoides* | 12 | `configs/ms.yaml` |
-| 乌鳢 | *Channa argus* | 7 | `configs/wuli.yaml` |
+| Species | Scientific Name | Keypoints | Protocol File |
+|---------|----------------|-----------|---------------|
+| Common carp | *Cyprinus carpio* | 13 | `configs/carp.yaml` |
+| Chinese mitten crab | *Eriocheir sinensis* | 12 | `configs/crab.yaml` |
+| Red swamp crayfish | *Procambarus clarkii* | 3 | `configs/crayfish.yaml` |
+| Largemouth bass | *Micropterus salmoides* | 12 | `configs/ms.yaml` |
+| Northern snakehead | *Channa argus* | 7 | `configs/wuli.yaml` |
 
 ## Benchmark
 
-`benchmark/` 目录包含批量处理压力测试的数据和可视化脚本。
+The `benchmark/` directory contains batch-processing stress-test data and visualization scripts.
 
-数据集和模型权重请联系：xsji@sdau.edu.cn / yzhao@sdau.edu.cn
+## Contact
+
+For datasets and model weights, please contact: xsji@sdau.edu.cn / yzhao@sdau.edu.cn
